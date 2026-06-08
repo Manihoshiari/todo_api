@@ -1,0 +1,32 @@
+export const taskdata=[
+     {
+        title: 'angular',
+        describtion: 'test angular',
+        assignee: 'mani',
+        flag: true,
+        id: '1',
+        taskstats: 'In Progress',
+        pririty: 'high',
+        date: '2026-06-07',
+      },
+      {
+        title: 'test',
+        describtion: 'test nx',
+        assignee: 'ali',
+        flag: false,
+        id: '2',
+        taskstats: 'Complete',
+        pririty: 'low',
+        date: '2026-08-07',
+      },
+      {
+        title: 'nest',
+        describtion: 'test nest',
+        assignee: 'mani',
+        flag: true,
+        id: '3',
+        taskstats: 'Canceled',
+        pririty: 'medium',
+        date: '2026-06-10',
+      },
+]
