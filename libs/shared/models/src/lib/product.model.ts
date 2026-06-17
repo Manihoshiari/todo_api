@@ -1,9 +1,9 @@
 export interface newTask{
   id:string
   date:string
-  title:string
-  describtion:string
-  assignee:string
+  taskname:string
+  describion:string
+  assignees:string
   flag:boolean
   taskstats:string
   pririty:string

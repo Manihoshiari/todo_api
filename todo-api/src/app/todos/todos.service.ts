@@ -1,31 +1,58 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { CreateTodoDto } from '../dto/create-todo.dto';
-import { UpdateTodoDto } from '../dto/update-todo.dto';
-import { taskdata } from '../task.data';
-import { log } from 'console';
 import { newTask } from '@org/models';
+import { InjectRepository } from '@nestjs/typeorm';
+import { tasksEntity } from 'entity/src/lib/tasks.entity';
+import {  Like, Raw, Repository } from 'typeorm';
+import { serialize } from 'v8';
 
 @Injectable()
 export class TodosService {
-  create(createTodoDto: newTask) {
-    return taskdata.unshift(createTodoDto)
+  constructor(
+    @InjectRepository(tasksEntity)
+    private tasksRepository: Repository<tasksEntity>,
+  ) {}
+  async create(createTodoDto: newTask) {
+    const task = this.tasksRepository.create(createTodoDto);
+    await this.tasksRepository.save(task);
+    return await this.findAll();
   }
 
-  findAll() {
-    return taskdata;
-    
+  async findAll() {
+    return await this.tasksRepository.find({
+      order: {
+        id: 'ASC',
+      },
+    });
   }
 
   findOne(id: string) {
-    return taskdata.find(v=>v.id===id)
+    return this.tasksRepository.findOne({
+      where: { id: id },
+    });
   }
 
-  update(id: string, updateTodoDto: UpdateTodoDto) {
-    return `This action updates a #${id} todo`;
+  async update(id: string, updateTodoDto: newTask) {
+    await this.tasksRepository.update(id, updateTodoDto);
+    return await this.findAll();
   }
 
-  remove(id: string) {
+  async remove(id: string) {
+    await this.tasksRepository.delete(id);
+    return await this.findAll();
+  }
+  async filteredtask(searchtext: string) {
+    Logger.log(searchtext)
+    
+      const cleanText = searchtext.toString().trim();
+      const word = searchtext ? searchtext.toString().trim() : 'a';
+      return await this.tasksRepository.find({
+      where: { taskname: Raw((alias) => `${alias} ILIKE :value`, { value: `%${word}%` }) },
+      order: { id: 'ASC' },
+
+    });
    
-   return  taskdata.filter(v=>v.id!==id)
+      return await this.findAll()
+   
+    
   }
 }

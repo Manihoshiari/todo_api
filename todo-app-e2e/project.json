@@ -1,0 +1,9 @@
+{
+  "name": "todo-app-e2e",
+  "$schema": "../node_modules/nx/schemas/project-schema.json",
+  "projectType": "application",
+  "sourceRoot": "todo-app-e2e/src",
+  "implicitDependencies": ["todo-app"],
+  "// targets": "to see all targets run: nx show project todo-app-e2e --web",
+  "targets": {}
+}
