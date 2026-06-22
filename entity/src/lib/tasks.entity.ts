@@ -1,4 +1,5 @@
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+import { TestUser } from './test.entity';
 
 @Entity()
 export class tasksEntity {
@@ -18,4 +19,5 @@ export class tasksEntity {
   flag: boolean = false;
   @Column({ nullable: false })
   taskstats: string = 'In Progress';
+
 }

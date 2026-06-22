@@ -1,5 +1,6 @@
 import { Entity, PrimaryGeneratedColumn, Column, JoinColumn, OneToMany } from 'typeorm';
 import { tokensEntity } from './tokens.entitiy';
+import { tasksEntity } from './tasks.entity';
 
 @Entity()
 export class TestUser {
@@ -15,4 +16,7 @@ refreshtoken!:string
   password!: string;
   @OneToMany(()=>tokensEntity,token=>token.user)
   tokens!:tokensEntity[]
+
+  @Column({nullable:true})
+  profile!:string
 }

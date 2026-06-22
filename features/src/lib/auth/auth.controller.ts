@@ -5,13 +5,16 @@ import {
   Inject,
   Post,
   Req,
+  Res,
+  UnauthorizedException,
   UseGuards,
 } from '@nestjs/common';
 import { registerdto } from './dto/register.dto';
 import { AuthService } from './auth.service';
 import { logindto } from './dto/login.dto';
 import { AuthGuard } from '@nestjs/passport';
-
+import { Request, Response, response } from 'express';
+import { JwtAuthGuard } from './jwt.gaurd';
 @Controller('auth')
 export class AuthController {
   constructor(private readonly authservice: AuthService) {}
@@ -20,11 +23,12 @@ export class AuthController {
     return await this.authservice.register(RegisterDto);
   }
   @Post('login')
-  async login(@Body() LoginDto: logindto) {
-    return await this.authservice.login(LoginDto);
+  async login(@Body() LoginDto: logindto ,@Res({passthrough:true})response:Response) {
+    
+    return await this.authservice.login(LoginDto,response);
   }
   @Get('profile')
-  @UseGuards(AuthGuard('jwt'))
+  @UseGuards(JwtAuthGuard)
   profile(@Req() req: any) {
     return {
       message: 'you have access this page',
@@ -32,7 +36,19 @@ export class AuthController {
     };
   }
   @Post('refresh')
-  async refresh(@Body() body:{refreshtoken:string}){
-    return this.authservice.refresh(body.refreshtoken)
+  async refresh(@Body() body:{refreshtoken:string},@Res() response:Response,@Req() request:Request){
+    const refreshtoken=request.cookies['refreshtoken']
+    if(!refreshtoken){
+      throw new UnauthorizedException('there is no refresh token')
+    }
+    const tokens=this.authservice.refresh(refreshtoken)
+    response.cookie('refreshtoken',(await tokens).refreshtoken,{
+      httpOnly:true,
+      secure:false,
+      maxAge:1000*360*24*15,
+      sameSite:'lax'
+    })
+
+    return this.authservice.refresh((await tokens).accesToken)
   }
 }

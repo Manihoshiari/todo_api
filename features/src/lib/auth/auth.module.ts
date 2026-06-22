@@ -7,7 +7,7 @@ import {PassportModule} from '@nestjs/passport'
 import { TestUser } from 'entity/src/lib/test.entity';
 import {tasksEntity} from 'entity/src/lib/tasks.entity'
 import {tokensEntity} from 'entity/src/lib/tokens.entitiy'
-import { jwtstrategy } from './jwt.strategy';
+import { JwtStrategy } from './jwt.strategy';
 @Module({
   imports:[TypeOrmModule.forFeature([TestUser,tasksEntity,tokensEntity]),
 PassportModule.register({defaultStrategy:'jwt'}),
@@ -16,7 +16,7 @@ JwtModule.register({
   signOptions:{expiresIn:'15m'}
 })
 ],
-  providers: [AuthService,jwtstrategy],
+  providers: [AuthService,JwtStrategy],
   controllers: [AuthController  ],
   exports:[JwtModule,PassportModule,AuthService]
 })

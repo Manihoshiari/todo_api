@@ -6,7 +6,7 @@ import { tasksEntity } from 'entity/src/lib/tasks.entity';
 import { TypeOrmModule } from '@nestjs/typeorm';
 
 @Module({
-  imports:[TypeOrmModule.forFeature([tasksEntity])],
+  imports:[TypeOrmModule.forFeature([tasksEntity]),AuthModule],
   controllers: [TodosController],
   providers: [TodosService,AuthModule,tasksEntity],
 })
