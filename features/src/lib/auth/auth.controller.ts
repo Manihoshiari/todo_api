@@ -12,9 +12,9 @@ import {
 import { registerdto } from './dto/register.dto';
 import { AuthService } from './auth.service';
 import { logindto } from './dto/login.dto';
-import { AuthGuard } from '@nestjs/passport';
 import { Request, Response, response } from 'express';
 import { JwtAuthGuard } from './jwt.gaurd';
+import { AuthGuard } from '@nestjs/passport';
 @Controller('auth')
 export class AuthController {
   constructor(private readonly authservice: AuthService) {}
@@ -36,19 +36,22 @@ export class AuthController {
     };
   }
   @Post('refresh')
-  async refresh(@Body() body:{refreshtoken:string},@Res() response:Response,@Req() request:Request){
+  @UseGuards(AuthGuard('jwt-refresh'))
+  async refresh(@Res() response:Response,@Req() request:Request){
     const refreshtoken=request.cookies['refreshtoken']
+    const accesstoken=request.cookies['accesstoken']
     if(!refreshtoken){
       throw new UnauthorizedException('there is no refresh token')
     }
+    
     const tokens=this.authservice.refresh(refreshtoken)
-    response.cookie('refreshtoken',(await tokens).refreshtoken,{
+    response.cookie('accesstoken',accesstoken,{
       httpOnly:true,
       secure:false,
       maxAge:1000*360*24*15,
       sameSite:'lax'
     })
 
-    return this.authservice.refresh((await tokens).accesToken)
+    return this.authservice.refresh(accesstoken)
   }
 }

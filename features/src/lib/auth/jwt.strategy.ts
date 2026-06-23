@@ -16,12 +16,12 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
       jwtFromRequest: ExtractJwt.fromExtractors([
         (req:Request)=>{
 
-          return req?.cookies?.['refreshtoken']
+          return req?.cookies?.['accesstoken']
         }
       ]),
       ignoreExpiration: false,
       secretOrKey:
-        'refresh_token',
+        'access_token',
     });
   }
   async validate(payload: any) {

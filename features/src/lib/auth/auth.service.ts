@@ -22,7 +22,7 @@ export class AuthService {
     const payload = { id: user.id };
     const accesToken = this.jwtservice.sign(payload, {
       secret: 'access_token',
-      expiresIn: '15m',
+      expiresIn: 10,
     });
     const refreshtoken = this.jwtservice.sign(payload, {
       secret: 'refresh_token',
@@ -83,6 +83,12 @@ export class AuthService {
       sameSite: 'lax',
       maxAge: 360 * 1000,
     });
+    response.cookie('accesstoken',token.accesToken,{
+      httpOnly:true,
+      secure:false,
+      sameSite:'lax',
+      maxAge:10000
+    })
     if (result) {
       return {
         success: true,
@@ -100,12 +106,13 @@ export class AuthService {
   }
   async refresh(token: string) {
     const payload = this.jwtservice.verify(token, {
-      secret: 'refresh_token',
+      secret: 'access_token',
     });
 
     const user = await this.repository.findOne({
       where: { id: payload.id },
     });
+    
     if (!user) {
       throw new UnauthorizedException('no user');
     }

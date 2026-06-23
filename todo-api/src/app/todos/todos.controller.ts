@@ -26,40 +26,35 @@ export class TodosController {
   @Post()
   @UseGuards(JwtAuthGuard)
   async create(@Body() createTodoDto: newTask) {
-
     return await this.todosService.create(createTodoDto);
   }
   private readonly loger = new Logger(TodosController.name);
   @Get()
-@UseGuards(JwtAuthGuard)
- async findAll(@Query('search') searchtext:string ) : Promise<newTask[]> {
-  
-  if(searchtext){
-    return await this.todosService.filteredtask(searchtext)
-  }else{
-    return await this.todosService.findAll();
+  @UseGuards(JwtAuthGuard)
+  async findAll(@Query('search') searchtext: string): Promise<newTask[]> {
+    if (searchtext) {
+      return await this.todosService.filteredtask(searchtext);
+    } else {
+      return await this.todosService.findAll();
+    }
   }
-    
-  }
- 
 
   @Get(':id')
-@UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard)
   findOne(@Param('id') id: string) {
     return this.todosService.findOne(id);
   }
 
   @Patch(':id')
-@UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard)
   async update(@Param('id') id: string, @Body() updateTodoDto: newTask) {
     return await this.todosService.update(id, updateTodoDto);
   }
 
   @Delete(':id')
-@UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard)
   async remove(@Param('id') id: string) {
     const updatedlist = await this.todosService.remove(id);
     return updatedlist;
   }
-
 }

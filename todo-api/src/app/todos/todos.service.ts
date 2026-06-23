@@ -41,7 +41,7 @@ export class TodosService {
     return await this.findAll();
   }
   async filteredtask(searchtext: string) {
-    const word = searchtext ? searchtext.toString().trim() : 'a';
+    const word =  searchtext.toString().trim() ;
     return await this.tasksRepository.find({
       where: {
         taskname: Raw((alias) => `${alias} ILIKE :value`, {
