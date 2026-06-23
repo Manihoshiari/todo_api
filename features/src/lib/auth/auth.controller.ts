@@ -39,19 +39,18 @@ export class AuthController {
   @UseGuards(AuthGuard('jwt-refresh'))
   async refresh(@Res() response:Response,@Req() request:Request){
     const refreshtoken=request.cookies['refreshtoken']
-    const accesstoken=request.cookies['accesstoken']
     if(!refreshtoken){
       throw new UnauthorizedException('there is no refresh token')
     }
     
     const tokens=this.authservice.refresh(refreshtoken)
-    response.cookie('accesstoken',accesstoken,{
+    response.cookie('accesstoken',(await tokens).accesToken,{
       httpOnly:true,
       secure:false,
       maxAge:1000*360*24*15,
       sameSite:'lax'
     })
 
-    return this.authservice.refresh(accesstoken)
+    return this.authservice.refresh((await tokens).accesToken)
   }
 }

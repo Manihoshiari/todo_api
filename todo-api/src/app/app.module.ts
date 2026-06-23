@@ -7,8 +7,9 @@ import { TodosService } from './todos/todos.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import {EntityModule}from '@org/entity'
 import {AuthModule} from 'features/src/lib/auth/auth.module'
+import { ScheduleModule } from '@nestjs/schedule';
 @Module({
-  imports: [TodosModule,
+  imports: [TodosModule,ScheduleModule.forRoot(),
     TypeOrmModule.forRoot({
       type: 'postgres',
       host: 'localhost',         

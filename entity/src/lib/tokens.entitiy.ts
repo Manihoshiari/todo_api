@@ -1,4 +1,4 @@
-import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
+import { Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
 import { TestUser } from "./test.entity";
 
 @Entity()
@@ -12,7 +12,10 @@ export class tokensEntity{
     @ManyToOne(()=>TestUser,user=>user.tokens,{
         onDelete:'CASCADE'
     })
-    
+    @Column({type:'timestamp'})
+    expire!:Date
+    @CreateDateColumn()
+    creat!:Date
     @JoinColumn({name:'user_Id'})
     user!:TestUser
 }
