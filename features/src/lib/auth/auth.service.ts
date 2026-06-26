@@ -92,7 +92,7 @@ export class AuthService {
     if (result) {
       return {
         success: true,
-        token: (await this.generatetoken(user!)).accesToken,
+        token:token.accesToken,
         message: 'you are entered successfuly',
         user: {
           name: user?.name,
@@ -106,7 +106,7 @@ export class AuthService {
   }
   async refresh(token: string) {
     const payload = this.jwtservice.verify(token, {
-      secret: 'access_token',
+      secret: 'refresh_token',
     });
 
     const user = await this.repository.findOne({
@@ -116,9 +116,7 @@ export class AuthService {
     if (!user) {
       throw new UnauthorizedException('no user');
     }
-    if (!token) {
-      throw new UnauthorizedException('no token');
-    }
+   
     return this.generatetoken(user);
   }
 }

@@ -13,7 +13,7 @@ export class authcornService{
     async cleanexpiretoken(){
         const now=new Date()
         await this.tokenrepository.delete({
-            expire:LessThan(new)
+            expire:LessThan(now)
         })
     }
 }

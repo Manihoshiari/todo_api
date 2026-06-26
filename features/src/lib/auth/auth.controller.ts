@@ -43,14 +43,20 @@ export class AuthController {
       throw new UnauthorizedException('there is no refresh token')
     }
     
-    const tokens=this.authservice.refresh(refreshtoken)
-    response.cookie('accesstoken',(await tokens).accesToken,{
+    const tokens=await this.authservice.refresh(refreshtoken)
+    response.cookie('accesstoken',tokens.accesToken,{
       httpOnly:true,
       secure:false,
       maxAge:1000*360*24*15,
       sameSite:'lax'
     })
-
-    return this.authservice.refresh((await tokens).accesToken)
+  
+    response.cookie('refreshtoken',tokens.refreshtoken,{
+      httpOnly:true,
+      secure:false,
+      maxAge:1000*360*24*15,
+      sameSite:'lax'
+    })
+   return tokens
   }
 }

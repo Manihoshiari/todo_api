@@ -8,6 +8,7 @@ import { TestUser } from 'entity/src/lib/test.entity';
 import {tasksEntity} from 'entity/src/lib/tasks.entity'
 import {tokensEntity} from 'entity/src/lib/tokens.entitiy'
 import { JwtStrategy } from './jwt.strategy';
+import { JwtRefreshStrategy } from './refresh.strategy';
 @Module({
   imports:[TypeOrmModule.forFeature([TestUser,tasksEntity,tokensEntity]),
 PassportModule.register({defaultStrategy:'jwt'}),
@@ -16,7 +17,7 @@ JwtModule.register({
   signOptions:{expiresIn:10}
 })
 ],
-  providers: [AuthService,JwtStrategy],
+  providers: [AuthService,JwtStrategy, JwtRefreshStrategy],
   controllers: [AuthController  ],
   exports:[JwtModule,PassportModule,AuthService]
 })
