@@ -9,13 +9,10 @@ export class tokensEntity{
     acssesToken!:string
     @Column()
     refreshToken!:string
-    @ManyToOne(()=>TestUser,user=>user.tokens,{
-        onDelete:'CASCADE'
-    })
-    @Column({type:'timestamp'})
+    @Column({type:'timestamp',nullable:true})
     expire!:Date
-    @CreateDateColumn()
+    @CreateDateColumn({type:'timestamp'})
     creat!:Date
-    @JoinColumn({name:'user_Id'})
+    @ManyToOne(()=>TestUser,(user)=>user.tokens,{onDelete:'CASCADE'})
     user!:TestUser
 }

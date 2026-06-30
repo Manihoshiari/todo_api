@@ -19,5 +19,7 @@ export class tasksEntity {
   flag: boolean = false;
   @Column({ nullable: false })
   taskstats: string = 'In Progress';
+  @ManyToOne(()=>TestUser,user=>user.task)
+  user!:tasksEntity
 
 }

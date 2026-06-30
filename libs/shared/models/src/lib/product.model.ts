@@ -8,3 +8,8 @@ export interface newTask{
   taskstats:string
   pririty:string
 }
+export interface user  {
+  id: string;
+  email: string;
+  name: string;
+}

@@ -9,7 +9,7 @@ export class authcornService{
         @InjectRepository(tokensEntity)
         private tokenrepository:Repository<tokensEntity>
     ){}
-    @Cron(CronExpression.EVERY_DAY_AT_1AM)
+    @Cron(CronExpression.EVERY_DAY_AT_1PM)
     async cleanexpiretoken(){
         const now=new Date()
         await this.tokenrepository.delete({

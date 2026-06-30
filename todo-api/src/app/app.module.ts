@@ -9,7 +9,9 @@ import {EntityModule}from '@org/entity'
 import {AuthModule} from 'features/src/lib/auth/auth.module'
 import { ScheduleModule } from '@nestjs/schedule';
 @Module({
-  imports: [TodosModule,ScheduleModule.forRoot(),
+  imports: [TodosModule,ScheduleModule.forRoot({
+    
+  }),
     TypeOrmModule.forRoot({
       type: 'postgres',
       host: 'localhost',         

@@ -23,9 +23,11 @@ export class AuthController {
     return await this.authservice.register(RegisterDto);
   }
   @Post('login')
-  async login(@Body() LoginDto: logindto ,@Res({passthrough:true})response:Response) {
-    
-    return await this.authservice.login(LoginDto,response);
+  async login(
+    @Body() LoginDto: logindto,
+    @Res({ passthrough: true }) response: Response,
+  ) {
+    return await this.authservice.login(LoginDto, response);
   }
   @Get('profile')
   @UseGuards(JwtAuthGuard)
@@ -37,26 +39,10 @@ export class AuthController {
   }
   @Post('refresh')
   @UseGuards(AuthGuard('jwt-refresh'))
-  async refresh(@Res() response:Response,@Req() request:Request){
-    const refreshtoken=request.cookies['refreshtoken']
-    if(!refreshtoken){
-      throw new UnauthorizedException('there is no refresh token')
-    }
-    
-    const tokens=await this.authservice.refresh(refreshtoken)
-    response.cookie('accesstoken',tokens.accesToken,{
-      httpOnly:true,
-      secure:false,
-      maxAge:1000*360*24*15,
-      sameSite:'lax'
-    })
-  
-    response.cookie('refreshtoken',tokens.refreshtoken,{
-      httpOnly:true,
-      secure:false,
-      maxAge:1000*360*24*15,
-      sameSite:'lax'
-    })
-   return tokens
+  async refresh(
+    @Res({ passthrough: true }) response: Response,
+    @Req() request: Request,
+  ) {
+    return await this.authservice.saverefresh(request, response);
   }
 }

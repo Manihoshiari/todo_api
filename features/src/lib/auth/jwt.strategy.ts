@@ -21,7 +21,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
       ]),
       ignoreExpiration: false,
       secretOrKey:
-        'refresh_token',
+        'access_token',
     });
   }
   async validate(payload: any) {

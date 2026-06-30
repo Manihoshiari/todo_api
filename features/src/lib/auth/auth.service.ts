@@ -6,7 +6,7 @@ import { registerdto } from './dto/register.dto';
 import { logindto } from './dto/login.dto';
 import { JwtService } from '@nestjs/jwt';
 import { tokensEntity } from 'entity/src/lib/tokens.entitiy';
-import { Response } from 'express';
+import { Request, Response } from 'express';
 
 @Injectable()
 export class AuthService {
@@ -22,7 +22,7 @@ export class AuthService {
     const payload = { id: user.id };
     const accesToken = this.jwtservice.sign(payload, {
       secret: 'access_token',
-      expiresIn: 10,
+      expiresIn: '15m',
     });
     const refreshtoken = this.jwtservice.sign(payload, {
       secret: 'refresh_token',
@@ -62,6 +62,8 @@ export class AuthService {
       where: { name: dtologin.name },
       select: { id: true, name: true, password: true, email: true },
     });
+    let expiredate = new Date();
+    expiredate.setMinutes(expiredate.getMinutes() + 1);
     const userToken = await this.repository.findOne({
       where: { name: dtologin.name },
     });
@@ -70,29 +72,31 @@ export class AuthService {
     if (!user?.id) {
       throw new UnauthorizedException();
     }
+
     const newToken = await this.tokenrepository.create({
       refreshToken: token.refreshtoken,
       acssesToken: token.accesToken,
       user,
+      expire: expiredate,
     });
-    this.tokenrepository.save(newToken);
+    await this.tokenrepository.save(newToken);
     const result = await this.argon.verify(user?.password, dtologin.password);
     response.cookie('refreshtoken', token.refreshtoken, {
       httpOnly: true,
       secure: false,
       sameSite: 'lax',
-      maxAge: 360 * 1000,
+      maxAge: 360 * 1000 * 24 * 15,
     });
-    response.cookie('accesstoken',token.accesToken,{
-      httpOnly:true,
-      secure:false,
-      sameSite:'lax',
-      maxAge:10000
-    })
+    response.cookie('accesstoken', token.accesToken, {
+      httpOnly: true,
+      secure: false,
+      sameSite: 'lax',
+      maxAge: 1000 * 60 * 15,
+    });
     if (result) {
       return {
         success: true,
-        token:token.accesToken,
+        token: token.accesToken,
         message: 'you are entered successfuly',
         user: {
           name: user?.name,
@@ -108,15 +112,37 @@ export class AuthService {
     const payload = this.jwtservice.verify(token, {
       secret: 'refresh_token',
     });
-
+    let expiredate = new Date();
+    expiredate.setDate(expiredate.getTime() + 15);
     const user = await this.repository.findOne({
       where: { id: payload.id },
     });
-    
+
     if (!user) {
       throw new UnauthorizedException('no user');
     }
-   
+
     return this.generatetoken(user);
+  }
+  async saverefresh(req: Request, res: Response) {
+    const refreshtoken = req.cookies['refreshtoken'];
+    if (!refreshtoken) {
+      throw new UnauthorizedException('there is no refresh token');
+    }
+    const tokens = await this.refresh(refreshtoken);
+    res.cookie('accesstoken', tokens.accesToken, {
+      httpOnly: true,
+      secure: false,
+      maxAge: 1000 * 360 * 24 * 15,
+      sameSite: 'lax',
+    });
+
+    res.cookie('refreshtoken', tokens.refreshtoken, {
+      httpOnly: true,
+      secure: false,
+      maxAge: 1000 * 360 * 24 * 15,
+      sameSite: 'lax',
+    });
+    return await tokens;
   }
 }
