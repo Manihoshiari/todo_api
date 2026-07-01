@@ -5,6 +5,7 @@ import { tasksEntity } from 'entity/src/lib/tasks.entity';
 import { Raw, Repository } from 'typeorm';
 import { Request } from 'express';
 import { TestUser } from 'entity/src/lib/test.entity';
+import { use } from 'passport';
 
 @Injectable()
 export class TodosService {
@@ -46,23 +47,19 @@ export class TodosService {
     await this.tasksRepository.delete(id);
     return await this.findAll(req);
   }
-  async filteredtask(searchtext: string) {
+  async filteredtask(searchtext: string,req:Request) {
+     const user=req.user as user
     const word = searchtext.toString().trim();
-    let result = await this.tasksRepository.find({
+    return await this.tasksRepository.find({
       where: {
+        user:{id:user.id},
         taskname: Raw((alias) => `${alias} ILIKE :value`, {
           value: `%${word}%`,
         }),
       },
       order: { id: 'ASC' },
     });
-    if (result.length === 0) {
-      return {
-        length: false,
-      };
-    } else {
-      return result;
-    }
+   
   }
   async changeimg(req: Request, img: string) {
     const user=req.user as user

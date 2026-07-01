@@ -19,39 +19,40 @@ import { newTask, user } from '@org/models';
 import { log } from 'console';
 import { AuthGuard } from '@nestjs/passport';
 import { Request } from 'express';
-import{dtoimage} from 'features/src/lib/auth/dto/profile.dto'
+import { dtoimage } from 'features/src/lib/auth/dto/profile.dto';
 @Controller('todos')
 export class TodosController {
   constructor(private readonly todosService: TodosService) {}
 
   @Post()
   @UseGuards(JwtAuthGuard)
-  async create(@Body() createTodoDto: newTask,@Req() req:Request) {
-    return await this.todosService.create(createTodoDto,req);
+  async create(@Body() createTodoDto: newTask, @Req() req: Request) {
+    return await this.todosService.create(createTodoDto, req);
   }
   @Get()
   @UseGuards(JwtAuthGuard)
-  async findAll(@Req() req:Request): Promise<newTask[]> {
+  async findAll(@Req() req: Request): Promise<newTask[]> {
     return await this.todosService.findAll(req);
   }
   @Get('search')
-  async search(@Query('search') searchtext: string,@Req()req:Request) {
+  @UseGuards(JwtAuthGuard)
+  async search(@Query('search') searchtext: string, @Req() req: Request) {
     if (searchtext && searchtext.trim() !== '') {
-      const result = await this.todosService.filteredtask(searchtext);
+      const result = await this.todosService.filteredtask(searchtext, req);
       return result;
     } else {
       return await this.todosService.findAll(req);
     }
   }
-@Patch('profile')
+  @Patch('profile')
   @UseGuards(JwtAuthGuard)
-  async changeimg(@Req()req:Request,@Body() img:dtoimage){
-    return await this.todosService.changeimg(req,img.img)
+  async changeimg(@Req() req: Request, @Body() img: dtoimage) {
+    return await this.todosService.changeimg(req, img.img);
   }
   @Get('profile')
   @UseGuards(JwtAuthGuard)
-  async getimg(@Req()req:Request){
-    return await this.todosService.getimg(req)
+  async getimg(@Req() req: Request) {
+    return await this.todosService.getimg(req);
   }
   @Get(':id')
   @UseGuards(JwtAuthGuard)
@@ -61,17 +62,18 @@ export class TodosController {
 
   @Patch(':id')
   @UseGuards(JwtAuthGuard)
-  async update(@Param('id') id: string, @Body() updateTodoDto: newTask,@Req()req:Request) {
-    console.log('update task')
-    return await this.todosService.update(id, updateTodoDto,req);
+  async update(
+    @Param('id') id: string,
+    @Body() updateTodoDto: newTask,
+    @Req() req: Request,
+  ) {
+    return await this.todosService.update(id, updateTodoDto, req);
   }
 
   @Delete(':id')
   @UseGuards(JwtAuthGuard)
-  async remove(@Param('id') id: string,@Req()req:Request) {
-
-    const updatedlist = await this.todosService.remove(id,req);
+  async remove(@Param('id') id: string, @Req() req: Request) {
+    const updatedlist = await this.todosService.remove(id, req);
     return updatedlist;
   }
-  
 }
